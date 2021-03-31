@@ -92,6 +92,11 @@ class TaskListGet(generics.ListAPIView):
     pagination_class = ThreePagination
     
     def get_queryset(self):
+
+        # #testing
+        # import time
+        # time.sleep(10)
+
         request = self.request
         developer =request.query_params.get('developer')
         if not developer:

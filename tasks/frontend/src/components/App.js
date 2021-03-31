@@ -36,7 +36,8 @@ class App extends Component {
                 data:result.message.tasks,
                 current:result.current,
                 max:Math.floor(((parseInt(result.total_task_count)%3==0)?0:1)+parseInt(result.total_task_count)/3),
-                loaded: true
+                loaded: true,
+                placeholder : "Loaded"
               };
         });
     })
@@ -55,12 +56,12 @@ class App extends Component {
     };
 
     renderButton1 () {
-            return <Col><Button onClick={this.handlePrev}>Prev Page</Button></Col>
+      return <Col><button class="btn btn-secondary" disabled={this.state.current==1?"dsiabled":null} onClick={this.handlePrev}>Prev Page</button></Col>;
     }
 
     renderButton2 () {
-            return <Col><Button onClick={this.handleNext}>Next Page</Button></Col>
-      }
+      return <Col><button class="btn btn-secondary" disabled={this.state.current==this.state.max?"disabled":null} onClick={this.handleNext}>Next Page</button></Col>
+    }
 
   render() {
         console.log(JSON.stringify(this.state));
@@ -83,8 +84,11 @@ class App extends Component {
                   );
                 })
             }
-            <Row>{this.renderButton1()}</Row>
-            <Row>{this.renderButton2()}</Row>
+            <Row>{this.renderButton1()}
+            {this.renderButton2()}</Row>
+            <Row className="fixed-bottom">
+              <Col>{this.state.placeholder}</Col>
+            </Row>
             </Container>
         </div>
         
