@@ -7,6 +7,7 @@ from .models import Task,Token
 from .serializers import TaskSerializer
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
+import logging
 
 import uuid
 
@@ -18,7 +19,9 @@ def login(request):
     response={'status':'error','message':'Wrong credentials'}
     login = request.data.get('username')
     passw = request.data.get('password')
+    logging.error(request.data)
     if login and passw:
+        logging.error("LOGIN:"+login+passw)
 #        user = authenticate(request, username=login, password=passw)
         if login=="admin" and passw=="123":
             t = Token()
@@ -31,7 +34,6 @@ def login(request):
 
 @api_view(['POST'])
 def edit_task(request,task_id):
-    print(request)
     token = request.data.get('token')
     if token is None:
         raise APIException('No token provided')        
@@ -49,10 +51,12 @@ def edit_task(request,task_id):
     text = request.data.get('text')
     status = request.data.get('status')
 
-    if text:
-        task.text = text
     if status:
         task.status = status
+    if text:
+        if task.text != text:
+            task.text = text
+            task.status = int(task.status/10)*10+1
     
     task.save()
 
@@ -70,6 +74,7 @@ class TaskListCreate(generics.ListCreateAPIView):
         super().perform_create(serializer)
 
     def post(self, request):
+
         response = super().post(request)
         resp = {'status':'ok','message':response.data}
         response.data = resp
@@ -106,7 +111,7 @@ class TaskListGet(generics.ListAPIView):
         sort_direction = request.query_params.get('sort_direction')
         
         if sort_field:
-            if sort_field in ['id','username','email','status']:
+            if sort_field in ['id','text','username','email','status']:
                 if not sort_direction:
                     sort_direction = 'asc'
                 if sort_direction in ['asc','desc']:
