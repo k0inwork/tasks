@@ -19,7 +19,6 @@ def login(request):
     response={'status':'error','message':'Wrong credentials'}
     login = request.data.get('username')
     passw = request.data.get('password')
-    logging.error(request.data)
     if login and passw:
         logging.error("LOGIN:"+login+passw)
 #        user = authenticate(request, username=login, password=passw)
@@ -34,14 +33,18 @@ def login(request):
 
 @api_view(['POST'])
 def edit_task(request,task_id):
+    id = task_id
+
     token = request.data.get('token')
     if token is None:
-        raise APIException('No token provided')        
+        raise APIException('No token provided')
+
     t = Token.objects.get(token=token)
     if t is None:
         raise APIException('No valid token provided')
     if t.expires < timezone.now():
         raise APIException('Expired token provided. Re-login.')
+
 
     id = task_id
     task = Task.objects.get(id=id)
@@ -56,7 +59,7 @@ def edit_task(request,task_id):
     if text:
         if task.text != text:
             task.text = text
-            task.status = int(task.status/10)*10+1
+            task.status = int(int(task.status)/10)*10+1
     
     task.save()
 
