@@ -8,6 +8,7 @@ class App extends Component {
     super(props);
     this.state = {
       data: [],
+      
       loaded: false,
       current : 1,
       max : 1,
